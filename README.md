@@ -99,7 +99,7 @@ console.log('state decrement from %s to %s.', initialState, nextState)
 [badge:license]: https://img.shields.io/badge/license-MIT-blue.svg "License"
 [badge:travis]: https://img.shields.io/travis/skordyr/re-reducer.svg "Build Status"
 [badge:coveralls]: https://img.shields.io/coveralls/skordyr/re-reducer.svg "Coverage Status"
-[badge:npm-version]: https://img.shields.io/npm/re-reducer/npm.svg "NPM Version"
+[badge:npm-version]: https://img.shields.io/npm/v/re-reducer.svg "NPM Version"
 [badge:npm-downloads]: https://img.shields.io/npm/dm/re-reducer.svg "NPM Downloads"
 
 [issues]: https://github.com/skordyr/re-reducer/issues "Issues"
