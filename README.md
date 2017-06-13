@@ -1,4 +1,6 @@
 # re-reducer
+[![ci:build-status-img]][ci:build-status-link] [![ci:coverage-status-img]][ci:coverage-status-link]
+
 a helper for create Flux Standard Action reducer
 
 ## Installation
@@ -88,4 +90,8 @@ console.log('state decrement from %s to %s.', initialState, nextState)
 ## Examples
 + [counter][example:counter]
 
+[ci:build-status-img]: https://travis-ci.org/skordyr/re-reducer.svg?branch=master "Build Status"
+[ci:build-status-link]: https://travis-ci.org/skordyr/re-reducer "re-reducer build status"
+[ci:coverage-status-img]: https://coveralls.io/repos/github/skordyr/re-reducer/badge.svg?branch=master "Coverage Status"
+[ci:coverage-status-link]: https://coveralls.io/github/skordyr/re-reducer?branch=master "re-reducer coverage status"
 [example:counter]: examples/counter.js "Counter example"
