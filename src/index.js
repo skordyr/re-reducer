@@ -64,6 +64,7 @@ export function pendingActionEnhancer (next) {
     const {
       meta
     } = extra
+
     return next(payload, {
       ...extra,
       meta: {
@@ -120,8 +121,8 @@ export function defaultGetActionType (type, prefix) {
  */
 export function defaultCreatActionCreator (type) {
   invariant(
-    typeof type === 'string' || typeof type === 'number',
-    'type expected a string or a number, instead received %s.',
+    typeof type === 'string',
+    'type expected a string, instead received %s.',
     type
   )
 
@@ -161,6 +162,7 @@ export function defaultActionHandle (state, action) {
   const nextPendingState = pendingState === undefined
     ? {}
     : { pending: false }
+
   return error || pendingMeta
     ? state
     : {
@@ -274,33 +276,69 @@ export function createReducer (options = {}) {
     )
 
     const actionType = getActionType(type, prefix)
-    _handles[actionType] = handle
 
-    const _actionCreator = createActionCreator(actionType)
-    const _pendingActionCreator = createPendingActionCreator(_actionCreator)
-    const _errorActionCreator = createErrorActionCreator(_actionCreator)
+    invariant(
+      typeof actionType === 'string',
+      'options.getActionType expected a function return a string, instead returned %s.',
+      actionType
+    )
 
-    let actionCreator
+    let _actionCreator = createActionCreator(actionType)
+
+    invariant(
+      typeof _actionCreator === 'function',
+      'options.createActionCreator expected a function return a function, instead returned %s.',
+      _actionCreator
+    )
+
+    let _pendingActionCreator = createPendingActionCreator(_actionCreator)
+
+    invariant(
+      typeof _pendingActionCreator === 'function',
+      'options.createPendingActionCreator expected a function return a function, instead returned %s.',
+      _pendingActionCreator
+    )
+
+    let _errorActionCreator = createErrorActionCreator(_actionCreator)
+
+    invariant(
+      typeof _errorActionCreator === 'function',
+      'options.createErrorActionCreator expected a function return a function, instead returned %s.',
+      _errorActionCreator
+    )
 
     if (enhancer !== undefined) {
-      actionCreator = enhancer(_actionCreator)
+      _actionCreator = enhancer(_actionCreator)
 
       invariant(
-        typeof actionCreator === 'function',
+        typeof _actionCreator === 'function',
         'enhancer expected a function return a function, instead returned %s.',
-        actionCreator
+        _actionCreator
       )
 
-      actionCreator.pending = enhancer(_pendingActionCreator)
-      actionCreator.error = enhancer(_errorActionCreator)
-    } else {
-      actionCreator = _actionCreator
-      actionCreator.pending = _pendingActionCreator
-      actionCreator.error = _errorActionCreator
+      _pendingActionCreator = enhancer(_pendingActionCreator)
+
+      invariant(
+        typeof _pendingActionCreator === 'function',
+        'enhancer expected a function return a function, instead returned %s.',
+        _pendingActionCreator
+      )
+
+      _errorActionCreator = enhancer(_errorActionCreator)
+
+      invariant(
+        typeof _errorActionCreator === 'function',
+        'enhancer expected a function return a function, instead returned %s.',
+        _errorActionCreator
+      )
     }
 
+    const actionCreator = _actionCreator
+    actionCreator.pending = _pendingActionCreator
+    actionCreator.error = _errorActionCreator
     actionCreator.type = type
     actionCreator.actionType = actionType
+    _handles[actionType] = handle
 
     return actionCreator
   }

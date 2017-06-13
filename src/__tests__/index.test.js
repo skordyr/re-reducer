@@ -345,7 +345,7 @@ describe(
       '#defaultCreatActionCreator',
       () => {
         test(
-          'should throw error when type argument is not a string or a number.',
+          'should throw error when type argument is not a string.',
           () => {
             expect(() => {
               defaultCreatActionCreator()
@@ -358,6 +358,9 @@ describe(
             expect(() => {
               defaultCreatActionCreator(true)
             })
+            expect(() => {
+              defaultCreatActionCreator(1)
+            })
             .toThrow()
             expect(() => {
               defaultCreatActionCreator({})
@@ -365,11 +368,6 @@ describe(
             .toThrow()
             expect(() => {
               defaultCreatActionCreator('test')
-            })
-            .not
-            .toThrow()
-            expect(() => {
-              defaultCreatActionCreator(1)
             })
             .not
             .toThrow()
