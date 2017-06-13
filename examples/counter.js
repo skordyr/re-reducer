@@ -1,20 +1,8 @@
-# re-reducer
-a helper for create Flux Standard Action reducer
+/* eslint-disable no-console, import/no-unresolved, import/extensions */
 
-## Installation
-To install the stable version:
-```bash
-npm install re-reducer --save
-```
-or
-```
-yarn add re-reducer
-```
-
-## Usage
-```js
-
-import { createReducer } from 're-reducer'
+import {
+  createReducer
+} from '..'
 
 function handleIncrement (next) {
   return (state, action) => {
@@ -82,10 +70,3 @@ console.log('state increment from %s to %s.', initialState, nextState)
 nextState = counterReducer(initialState, change(10, 'decrement'))
 console.log('state decrement from %s to %s.', initialState, nextState)
 // state decrement from 1 to -9.
-
-```
-
-## Examples
-+ [counter][example:counter]
-
-[example:counter]: examples/counter.js "Counter example"

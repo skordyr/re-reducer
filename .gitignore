@@ -1,0 +1,7 @@
+.DS_STORE
+npm-debug.log
+yarn-error.log
+coverage
+es
+lib
+node_modules

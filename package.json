@@ -1,0 +1,39 @@
+{
+  "name": "re-reducer",
+  "version": "0.1.0",
+  "description": "a helper for create Flux Standard Action reducer",
+  "repository": "https://github.com/skordyr/re-reducer.git",
+  "author": "skordyr <xyan.sk@gmail.com>",
+  "license": "MIT",
+  "files": [
+    "*.md",
+    "es",
+    "lib"
+  ],
+  "main": "lib/index.js",
+  "module": "es/index.js",
+  "scripts": {
+    "lint": "eslint examples scripts src",
+    "test": "jest",
+    "build": "node ./scripts/build.js",
+    "clean": "rm -rf es lib coverage"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "coverageDirectory": "coverage"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-eslint": "^7.2.3",
+    "babel-loader": "^7.0.0",
+    "babel-preset-env": "^1.5.2",
+    "babel-preset-stage-0": "^6.24.1",
+    "coveralls": "^2.13.1",
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "^15.0.1",
+    "eslint-plugin-import": "^2.3.0",
+    "eslint-plugin-jsx-a11y": "^5.0.3",
+    "eslint-plugin-react": "^7.0.1",
+    "jest": "^20.0.4"
+  }
+}
