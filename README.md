@@ -1,5 +1,10 @@
 # re-reducer
-[![ci:build-status-img]][ci:build-status-link] [![ci:coverage-status-img]][ci:coverage-status-link]
+[![badge:travis]][build-status]
+[![badge:coveralls]][coverage-status]
+[![badge:npm-version]][npm-re-reducer]
+[![badge:npm-downloads]][npm-re-reducer]
+[![badge:issues]][issues]
+[![badge:license]][license]
 
 a helper for create Flux Standard Action reducer
 
@@ -90,8 +95,17 @@ console.log('state decrement from %s to %s.', initialState, nextState)
 ## Examples
 + [counter][example:counter]
 
-[ci:build-status-img]: https://travis-ci.org/skordyr/re-reducer.svg?branch=master "Build Status"
-[ci:build-status-link]: https://travis-ci.org/skordyr/re-reducer "re-reducer build status"
-[ci:coverage-status-img]: https://coveralls.io/repos/github/skordyr/re-reducer/badge.svg?branch=master "Coverage Status"
-[ci:coverage-status-link]: https://coveralls.io/github/skordyr/re-reducer?branch=master "re-reducer coverage status"
+[badge:issues]: https://img.shields.io/github/issues/skordyr/re-reducer.svg "Issues"
+[badge:license]: https://img.shields.io/badge/license-MIT-blue.svg "License"
+[badge:travis]: https://img.shields.io/travis/skordyr/re-reducer.svg "Build Status"
+[badge:coveralls]: https://img.shields.io/coveralls/skordyr/re-reducer.svg "Coverage Status"
+[badge:npm-version]: https://img.shields.io/npm/re-reducer/npm.svg "NPM Version"
+[badge:npm-downloads]: https://img.shields.io/npm/dm/re-reducer.svg "NPM Downloads"
+
+[issues]: https://github.com/skordyr/re-reducer/issues "Issues"
+[license]: https://raw.githubusercontent.com/skordyr/re-reducer/master/LICENSE "License"
+[build-status]: https://travis-ci.org/skordyr/re-reducer "Build Status"
+[coverage-status]: https://coveralls.io/github/skordyr/re-reducer "Coverage Status"
+[npm-re-reducer]: https://www.npmjs.com/package/re-reducer "re-reducer"
+
 [example:counter]: examples/counter.js "Counter example"
