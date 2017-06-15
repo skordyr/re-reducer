@@ -1,3 +1,15 @@
+/* eslint-disable no-console */
+
+/**
+ * @param {string} format
+ * @param {Array<any>} args
+ * @returns {string}
+ */
+export function formatMessage (format, ...args) {
+  let lastIndex = 0
+  return format.replace(/%s/g, () => String(args[lastIndex++]))
+}
+
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19,7 +31,6 @@
  * @param {Array<any>} args
  * @returns {void}
  */
-
 export function invariant (condition, format, ...args) {
   if (process.env.NODE_ENV !== 'production') {
     if (format === undefined) {
@@ -34,12 +45,48 @@ export function invariant (condition, format, ...args) {
         'for the full error message and additional helpful warnings.'
       )
     } else {
-      let lastIndex = 0
-      error = new Error(format.replace(/%s/g, () => String(args[lastIndex++])))
+      error = new Error(formatMessage(format, ...args))
       error.name = 'Invariant Violation'
     }
     error.framesToPop = 1
     throw error
+  }
+}
+
+/**
+ * Copyright 2014-2015, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * Similar to invariant but only logs a warning if the condition is not met.
+ * This can be used to log issues in development environments in critical
+ * paths. Removing the logging code for production environments will keep the
+ * same logic and follow the same code paths.
+ *
+ * @param {any} condition
+ * @param {string} format
+ * @param {Array<any>} args
+ * @returns {void}
+ */
+export function warning (condition, format, ...args) {
+  if (process.env.NODE_ENV !== 'production') {
+    if (format === undefined) {
+      throw new Error('warning(...): Second argument must be a string.')
+    }
+    if (!condition) {
+      const message = `Warning: ${formatMessage(format, ...args)}`
+      if (typeof console !== 'undefined') {
+        console.error(message)
+      }
+      try {
+        // This error was thrown as a convenience so that you can use this stack
+        // to find the callsite that caused this warning to fire.
+        throw new Error(message)
+      } catch (err) {} // eslint-disable-line no-empty
+    }
   }
 }
 
@@ -225,6 +272,7 @@ export function createReducer (options = {}) {
   )
 
   /**
+   * @inner
    * @var {Object.<string, function>}
    */
   const _handles = {}
@@ -338,6 +386,14 @@ export function createReducer (options = {}) {
     actionCreator.error = _errorActionCreator
     actionCreator.type = type
     actionCreator.actionType = actionType
+
+    warning(
+      _handles[actionType] === undefined || _handles[actionType] === handle,
+      'register overwrite "%s" action handle with a new handle.',
+      actionType,
+      handle
+    )
+
     _handles[actionType] = handle
 
     return actionCreator

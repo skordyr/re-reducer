@@ -1,7 +1,9 @@
 /* eslint-env jest */
 
 import {
+  formatMessage,
   invariant,
+  warning,
   pendingActionEnhancer,
   errorActionEnhancer,
   defaultGetActionType,
@@ -13,6 +15,115 @@ import {
 describe(
   're-reducer',
   () => {
+    describe(
+      '#formatMessage',
+      () => {
+        test(
+          'should return sprintf-style format (only %s is supported) message.',
+          () => {
+            expect(formatMessage('%s-%s-%s-%s.', 1, 2, 3, 4)).toBe('1-2-3-4.')
+          }
+        )
+      }
+    )
+
+    describe(
+      '#warning',
+      () => {
+        const _error = global.console.error
+        beforeEach(() => {
+          global.console.error = jest.fn()
+        })
+
+        afterEach(() => {
+          global.console.error = _error.bind(global.console)
+        })
+
+        test(
+          'should throw error when format argument is undefined in non-production environment.',
+          () => {
+            expect(() => {
+              warning(false)
+            })
+            .toThrow()
+            expect(() => {
+              warning(true)
+            })
+            .toThrow()
+            expect(() => {
+              warning(true, 'test.')
+            })
+            .not
+            .toThrow()
+            expect(() => {
+              warning(false, 'test.')
+            })
+            .not
+            .toThrow()
+            expect(global.console.error.mock.calls.length).toBe(1)
+          }
+        )
+
+        test(
+          'should not thorw error when format argument is undefined in production environment.',
+          () => {
+            process.env.NODE_ENV = 'production'
+
+            expect(() => {
+              warning(false)
+            })
+            .not
+            .toThrow()
+            expect(() => {
+              warning(true)
+            })
+            .not
+            .toThrow()
+
+            process.env.NODE_ENV = 'test'
+          }
+        )
+
+        test(
+          'should not throw when console in undefined in context.',
+          () => {
+            const _console = global.console
+
+            global.console = undefined
+
+            expect(() => {
+              warning(false, 'test.')
+            })
+            .not
+            .toThrow()
+
+            global.console = _console
+          }
+        )
+
+        test(
+          'should not print message in production environment.',
+          () => {
+            process.env.NODE_ENV = 'production'
+
+            warning(false, '%s-%s-%s-%s.', 1, 2, 3, 4)
+            expect(global.console.error.mock.calls.length).toBe(0)
+
+            process.env.NODE_ENV = 'test'
+          }
+        )
+
+        test(
+          'should print sprintf-style format (only %s is supported) message in non-production environment.',
+          () => {
+            warning(false, '%s-%s-%s-%s.', 1, 2, 3, 4)
+            expect(global.console.error.mock.calls.length).toBe(1)
+            expect(global.console.error.mock.calls[0][0]).toBe('Warning: 1-2-3-4.')
+          }
+        )
+      }
+    )
+
     describe(
       '#invariant',
       () => {
@@ -808,6 +919,31 @@ describe(
         )
 
         test(
+          'should print warning error when in non-production environment.',
+          () => {
+            const {
+              register
+            } = createReducer()
+            const _error = global.console.error
+            global.console.error = jest.fn()
+
+            register('test')
+            register('test')
+            expect(global.console.error.mock.calls.length).toBe(1)
+
+            process.env.NODE_ENV = 'production'
+
+            register('test2')
+            register('test2')
+            expect(global.console.error.mock.calls.length).toBe(1)
+
+            process.env.NODE_ENV = 'test'
+
+            global.console.error = _error.bind(global.console)
+          }
+        )
+
+        test(
           'should throw error when handle is not a function or undefined for use default',
           () => {
             const {
@@ -840,7 +976,7 @@ describe(
             .not
             .toThrow()
             expect(() => {
-              register('test')
+              register('test2')
             })
             .not
             .toThrow()
@@ -905,7 +1041,7 @@ describe(
             .not
             .toThrow()
             expect(() => {
-              register('test', defaultActionHandle)
+              register('test2', defaultActionHandle)
             })
             .not
             .toThrow()
