@@ -919,7 +919,8 @@ describe(
         )
 
         test(
-          'should print warning error when in non-production environment.',
+          'should print warning error when register a registerd action ' +
+          'with another handle in non-production environment.',
           () => {
             const {
               register
@@ -929,12 +930,17 @@ describe(
 
             register('test')
             register('test')
+
+            expect(global.console.error.mock.calls.length).toBe(0)
+
+            register('test2')
+            register('test2', () => {})
             expect(global.console.error.mock.calls.length).toBe(1)
 
             process.env.NODE_ENV = 'production'
 
-            register('test2')
-            register('test2')
+            register('test3')
+            register('test3')
             expect(global.console.error.mock.calls.length).toBe(1)
 
             process.env.NODE_ENV = 'test'
