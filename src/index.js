@@ -390,8 +390,7 @@ export function createReducer (options = {}) {
     warning(
       _handles[actionType] === undefined || _handles[actionType] === handle,
       'register overwrite "%s" action handle with a new handle.',
-      actionType,
-      handle
+      actionType
     )
 
     _handles[actionType] = handle

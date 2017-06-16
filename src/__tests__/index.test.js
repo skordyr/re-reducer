@@ -28,6 +28,78 @@ describe(
     )
 
     describe(
+      '#invariant',
+      () => {
+        test(
+          'should throw error when format argument is undefined in non-production environment.',
+          () => {
+            expect(() => {
+              invariant(false)
+            })
+            .toThrow()
+            expect(() => {
+              invariant(true)
+            })
+            .toThrow()
+            expect(() => {
+              invariant(true, 'test.')
+            })
+            .not
+            .toThrow()
+          }
+        )
+
+        test(
+          'should throw error when condition argument is falsy in production environment.',
+          () => {
+            process.env.NODE_ENV = 'production'
+
+            expect(() => {
+              invariant(false)
+            })
+            .toThrow()
+            expect(() => {
+              invariant(false, 'test.')
+            })
+            .toThrow()
+            expect(() => {
+              invariant(true)
+            })
+            .not
+            .toThrow()
+
+            process.env.NODE_ENV = 'test'
+          }
+        )
+
+        test(
+          'should not throw error when condition argument is true and format argument is a string.',
+          () => {
+            expect(() => {
+              invariant(true, 'test.')
+            })
+            .not
+            .toThrow()
+            expect(() => {
+              invariant(false, 'test.')
+            })
+            .toThrow()
+          }
+        )
+
+        test(
+          'should throw sprintf-style format (only %s is supported) message error.',
+          () => {
+            expect(() => {
+              invariant(false, '%s-%s-%s-%s-%s.', 1, 2, 3, 4, 5)
+            })
+            .toThrow(/^1-2-3-4-5\.$/)
+          }
+        )
+      }
+    )
+
+    describe(
       '#warning',
       () => {
         const _error = global.console.error
@@ -119,78 +191,6 @@ describe(
             warning(false, '%s-%s-%s-%s.', 1, 2, 3, 4)
             expect(global.console.error.mock.calls.length).toBe(1)
             expect(global.console.error.mock.calls[0][0]).toBe('Warning: 1-2-3-4.')
-          }
-        )
-      }
-    )
-
-    describe(
-      '#invariant',
-      () => {
-        test(
-          'should throw error when format argument is undefined in non-production environment.',
-          () => {
-            expect(() => {
-              invariant(false)
-            })
-            .toThrow()
-            expect(() => {
-              invariant(true)
-            })
-            .toThrow()
-            expect(() => {
-              invariant(true, 'test.')
-            })
-            .not
-            .toThrow()
-          }
-        )
-
-        test(
-          'should throw error when condition argument is falsy in production environment.',
-          () => {
-            process.env.NODE_ENV = 'production'
-
-            expect(() => {
-              invariant(false)
-            })
-            .toThrow()
-            expect(() => {
-              invariant(false, 'test.')
-            })
-            .toThrow()
-            expect(() => {
-              invariant(true)
-            })
-            .not
-            .toThrow()
-
-            process.env.NODE_ENV = 'test'
-          }
-        )
-
-        test(
-          'should not throw error when condition argument is true and format argument is a string.',
-          () => {
-            expect(() => {
-              invariant(true, 'test.')
-            })
-            .not
-            .toThrow()
-            expect(() => {
-              invariant(false, 'test.')
-            })
-            .toThrow()
-          }
-        )
-
-        test(
-          'should throw sprintf-style format (only %s is supported) message error.',
-          () => {
-            expect(() => {
-              invariant(false, '%s-%s-%s-%s-%s.', 1, 2, 3, 4, 5)
-            })
-            .toThrow(/^1-2-3-4-5\.$/)
           }
         )
       }
