@@ -6,6 +6,7 @@ import {
   warning,
   pendingActionEnhancer,
   errorActionEnhancer,
+  statusStateEnhancer,
   defaultGetActionType,
   defaultCreatActionCreator,
   defaultActionHandle,
@@ -315,6 +316,26 @@ describe(
             })
             .toThrow()
             expect(() => {
+              errorActionEnhancer(null)
+            })
+            .toThrow()
+            expect(() => {
+              errorActionEnhancer(true)
+            })
+            .toThrow()
+            expect(() => {
+              errorActionEnhancer(1)
+            })
+            .toThrow()
+            expect(() => {
+              errorActionEnhancer('test')
+            })
+            .toThrow()
+            expect(() => {
+              errorActionEnhancer({})
+            })
+            .toThrow()
+            expect(() => {
               errorActionEnhancer(() => {})
             })
             .not
@@ -387,6 +408,167 @@ describe(
               test: true,
               ...errorExra
             })
+          }
+        )
+      }
+    )
+
+    describe(
+      '#statusStateEnhancer',
+      () => {
+        test(
+          'should throw error when next argument is not a function.',
+          () => {
+            expect(() => {
+              statusStateEnhancer()
+            })
+            .toThrow()
+            expect(() => {
+              statusStateEnhancer(null)
+            })
+            .toThrow()
+            expect(() => {
+              statusStateEnhancer(true)
+            })
+            .toThrow()
+            expect(() => {
+              statusStateEnhancer(1)
+            })
+            .toThrow()
+            expect(() => {
+              statusStateEnhancer('test')
+            })
+            .toThrow()
+            expect(() => {
+              statusStateEnhancer({})
+            })
+            .toThrow()
+            expect(() => {
+              statusStateEnhancer(() => {})
+            })
+            .not
+            .toThrow()
+          }
+        )
+
+        test(
+          'should throw error when the state argument is not a object and ' +
+          'the action argument pending or error properties is true.',
+          () => {
+            expect(() => {
+              statusStateEnhancer(() => {})(undefined, { meta: { pending: true } })
+            })
+            .toThrow()
+            expect(() => {
+              statusStateEnhancer(() => {})(undefined, { error: true })
+            })
+            .toThrow()
+            expect(() => {
+              statusStateEnhancer(() => {})(null, { meta: { pending: true } })
+            })
+            .toThrow()
+            expect(() => {
+              statusStateEnhancer(() => {})(1, { meta: { pending: true } })
+            })
+            .toThrow()
+            expect(() => {
+              statusStateEnhancer(() => {})('test', { meta: { pending: true } })
+            })
+            .toThrow()
+            expect(() => {
+              statusStateEnhancer(() => {})(() => {}, { meta: { pending: true } })
+            })
+            .toThrow()
+            expect(() => {
+              statusStateEnhancer(() => {})({}, { meta: { pending: true } })
+            })
+            .not
+            .toThrow()
+            expect(() => {
+              statusStateEnhancer(() => {})(undefined, {})
+            })
+            .not
+            .toThrow()
+          }
+        )
+
+        test(
+          'should return the value of call next argument ' +
+          'when the action argument pending and error properties both false or undefined.',
+          () => {
+            const mockNext = jest.fn()
+            mockNext.mockReturnValue('test')
+            const wrapped = statusStateEnhancer(mockNext)
+
+            expect(mockNext.mock.calls.length)
+              .toBe(0)
+            expect(wrapped({}, {}))
+              .toBe('test')
+            expect(mockNext.mock.calls.length)
+              .toBe(1)
+            expect(wrapped({}, { meta: { pending: false } }))
+              .toBe('test')
+            expect(mockNext.mock.calls.length)
+              .toBe(2)
+            expect(wrapped({}, { error: false }))
+              .toBe('test')
+            expect(mockNext.mock.calls.length)
+              .toBe(3)
+            expect(wrapped({}, { meta: { pending: true } }))
+              .not
+              .toBe('test')
+            expect(mockNext.mock.calls.length)
+              .toBe(3)
+            expect(wrapped({}, { error: true }))
+              .not
+              .toBe('test')
+            expect(mockNext.mock.calls.length)
+              .toBe(3)
+          }
+        )
+
+        test(
+          'should not change the state when state not has pending property and ' +
+          'the action argument pending or error properties is true.',
+          () => {
+            const state = {
+              test: 'test'
+            }
+
+            expect(statusStateEnhancer(() => {})(state, { meta: { pending: true } }))
+              .toBe(state)
+            expect(statusStateEnhancer(() => {})(state, { error: true }))
+              .toBe(state)
+          }
+        )
+
+        test(
+          'should change the state pending property to true when' +
+          'when the argument pending property is true',
+          () => {
+            const state = {
+              pending: null
+            }
+
+            expect(statusStateEnhancer(() => {})(state, { meta: { pending: true } }))
+              .toEqual({
+                pending: true
+              })
+          }
+        )
+
+        test(
+          'should change the state pending property to false when' +
+          'when the argument error property is true',
+          () => {
+            const state = {
+              pending: null
+            }
+
+            expect(statusStateEnhancer(() => {})(state, { error: true }))
+              .toEqual({
+                pending: false
+              })
           }
         )
       }
@@ -509,7 +691,7 @@ describe(
       '#defaultActionHandle',
       () => {
         const initialStateWithPending = {
-          pending: true
+          pending: null
         }
         const initialStateWithoutPending = {
           test: false
@@ -527,8 +709,7 @@ describe(
         const normalAction = {
           type: 'normal',
           payload: {
-            test: true,
-            pending: true
+            test: true
           }
         }
 
@@ -564,46 +745,56 @@ describe(
         )
 
         test(
-          'should not changen the state when received a pending or error action.',
+          'should not change the state when state not has pending property and ' +
+          'recieved a pending or error action.',
           () => {
             expect(defaultActionHandle(initialStateWithoutPending, pendingAction))
               .toBe(initialStateWithoutPending)
             expect(defaultActionHandle(initialStateWithoutPending, errorAction))
               .toBe(initialStateWithoutPending)
-            expect(defaultActionHandle(initialStateWithoutPending, normalAction))
-              .not
-              .toBe(initialStateWithoutPending)
           }
         )
 
         test(
-          'should merge with payload when state has not pending property.',
+          'should change the state pending property to ture ' +
+          'when recieved a pending action.',
+          () => {
+            expect(defaultActionHandle(initialStateWithPending, pendingAction))
+              .toEqual({
+                ...initialStateWithPending,
+                pending: true
+              })
+          }
+        )
+
+        test(
+          'should change the state pending property to false ' +
+          'when recieved a error action.',
+          () => {
+            expect(defaultActionHandle(initialStateWithPending, errorAction))
+              .toEqual({
+                ...initialStateWithPending,
+                pending: false
+              })
+          }
+        )
+
+        test(
+          'should merge the state and the action payload when recieved a normal action.',
           () => {
             expect(defaultActionHandle(initialStateWithoutPending, normalAction))
               .toEqual({
                 ...initialStateWithoutPending,
                 ...normalAction.payload
               })
-            expect(defaultActionHandle(initialStateWithPending, normalAction))
-              .not
-              .toEqual({
-                ...initialStateWithPending,
-                ...normalAction.payload
-              })
           }
         )
 
         test(
-          'should merge state with "{ pending: false }" when state has pending property.',
+          'should merge the state and the action payload and change pending property to false ' +
+          'when recieved a normal action.',
           () => {
             expect(defaultActionHandle(initialStateWithPending, normalAction))
-              .toEqual({
-                ...initialStateWithPending,
-                ...normalAction.payload,
-                pending: false
-              })
-            expect(defaultActionHandle(initialStateWithoutPending, normalAction))
-              .not
               .toEqual({
                 ...initialStateWithoutPending,
                 ...normalAction.payload,

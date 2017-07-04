@@ -148,6 +148,53 @@ export function errorActionEnhancer (next) {
 }
 
 /**
+ * @param {function} next
+ * @returns {function:object}
+ */
+export function statusStateEnhancer (next) {
+  invariant(
+    typeof next === 'function',
+    'next expected a function, instead received %s.',
+    next
+  )
+
+  return (state, action) => {
+    const {
+      meta: {
+        pending
+      } = {},
+      error
+    } = action
+
+    if (pending || error) {
+      invariant(
+        typeof state === 'object' && state !== null,
+        'state expected a non-null object, instead received %s.',
+        state
+      )
+
+      const {
+        pending: pendingState
+      } = state
+
+      if (pendingState === undefined) {
+        return state
+      }
+
+      return pending ? {
+        ...state,
+        pending: true
+      } : {
+        ...state,
+        pending: false
+      }
+    }
+
+    return next(state, action)
+  }
+}
+
+/**
  * @param {string} type
  * @param {string|void} prefix
  * @returns {string}
@@ -181,43 +228,39 @@ export function defaultCreatActionCreator (type) {
 }
 
 /**
+ * @function
  * @param {object} state
  * @param {object} action
- * @param {string} action.type
- * @param {any} action.payload
- * @param {boolean|void} action.error
- * @param {object|void} action.meta
  * @returns {object}
  */
-export function defaultActionHandle (state, action) {
+export const defaultActionHandle = statusStateEnhancer((state, action) => {
   invariant(
     typeof state === 'object' && state !== null,
-    'state expected a object, instead received %s.',
+    'state expected a non-null object, instead received %s.',
     state
   )
 
   const {
-    payload,
-    error,
-    meta: {
-      pending: pendingMeta
-    } = {}
+    payload
   } = action
-  const {
-    pending: pendingState
-  } = state
-  const nextPendingState = pendingState === undefined
-    ? {}
-    : { pending: false }
 
-  return error || pendingMeta
-    ? state
-    : {
+  const {
+    pending
+  } = state
+
+  if (pending === undefined) {
+    return {
       ...state,
-      ...payload,
-      ...nextPendingState
+      ...payload
     }
-}
+  }
+
+  return {
+    ...state,
+    ...payload,
+    pending: false
+  }
+})
 
 /**
  * @param {object} [options={}]
