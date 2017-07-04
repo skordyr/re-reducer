@@ -1,3 +1,8 @@
+# v0.1.3
+2017-07-04
+
+Add statusStateEnhancer.
+
 # v0.1.2
 2017-06-13
 
