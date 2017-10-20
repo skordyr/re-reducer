@@ -37,16 +37,16 @@ describe(
             expect(() => {
               invariant(false)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               invariant(true)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               invariant(true, 'test.')
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
           }
         )
 
@@ -58,16 +58,16 @@ describe(
             expect(() => {
               invariant(false)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               invariant(false, 'test.')
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               invariant(true)
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
 
             process.env.NODE_ENV = 'test'
           }
@@ -79,12 +79,12 @@ describe(
             expect(() => {
               invariant(true, 'test.')
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
             expect(() => {
               invariant(false, 'test.')
             })
-            .toThrow()
+              .toThrow()
           }
         )
 
@@ -94,7 +94,7 @@ describe(
             expect(() => {
               invariant(false, '%s-%s-%s-%s-%s.', 1, 2, 3, 4, 5)
             })
-            .toThrow(/^1-2-3-4-5\.$/)
+              .toThrow(/^1-2-3-4-5\.$/)
           }
         )
       }
@@ -118,21 +118,21 @@ describe(
             expect(() => {
               warning(false)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               warning(true)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               warning(true, 'test.')
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
             expect(() => {
               warning(false, 'test.')
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
             expect(global.console.error.mock.calls.length).toBe(1)
           }
         )
@@ -145,13 +145,13 @@ describe(
             expect(() => {
               warning(false)
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
             expect(() => {
               warning(true)
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
 
             process.env.NODE_ENV = 'test'
           }
@@ -167,8 +167,8 @@ describe(
             expect(() => {
               warning(false, 'test.')
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
 
             global.console = _console
           }
@@ -206,32 +206,32 @@ describe(
             expect(() => {
               pendingActionEnhancer()
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               pendingActionEnhancer(null)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               pendingActionEnhancer(true)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               pendingActionEnhancer(1)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               pendingActionEnhancer('test')
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               pendingActionEnhancer({})
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               pendingActionEnhancer(() => {})
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
           }
         )
 
@@ -242,29 +242,29 @@ describe(
             expect(() => {
               pendingActionEnhancer(() => {})('test', null)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               pendingActionEnhancer(() => {})('test', true)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               pendingActionEnhancer(() => {})('test', 1)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               pendingActionEnhancer(() => {})('test', 'test')
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               pendingActionEnhancer(() => {})('test', {})
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
             expect(() => {
               pendingActionEnhancer(() => {})('test')
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
           }
         )
 
@@ -314,32 +314,32 @@ describe(
             expect(() => {
               errorActionEnhancer()
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               errorActionEnhancer(null)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               errorActionEnhancer(true)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               errorActionEnhancer(1)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               errorActionEnhancer('test')
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               errorActionEnhancer({})
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               errorActionEnhancer(() => {})
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
           }
         )
 
@@ -350,29 +350,29 @@ describe(
             expect(() => {
               errorActionEnhancer(() => {})('test', null)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               errorActionEnhancer(() => {})('test', true)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               errorActionEnhancer(() => {})('test', 1)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               errorActionEnhancer(() => {})('test', 'test')
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               errorActionEnhancer(() => {})('test', {})
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
             expect(() => {
               errorActionEnhancer(() => {})('test')
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
           }
         )
 
@@ -422,32 +422,32 @@ describe(
             expect(() => {
               statusStateEnhancer()
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               statusStateEnhancer(null)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               statusStateEnhancer(true)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               statusStateEnhancer(1)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               statusStateEnhancer('test')
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               statusStateEnhancer({})
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               statusStateEnhancer(() => {})
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
           }
         )
 
@@ -458,37 +458,37 @@ describe(
             expect(() => {
               statusStateEnhancer(() => {})(undefined, { meta: { pending: true } })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               statusStateEnhancer(() => {})(undefined, { error: true })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               statusStateEnhancer(() => {})(null, { meta: { pending: true } })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               statusStateEnhancer(() => {})(1, { meta: { pending: true } })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               statusStateEnhancer(() => {})('test', { meta: { pending: true } })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               statusStateEnhancer(() => {})(() => {}, { meta: { pending: true } })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               statusStateEnhancer(() => {})({}, { meta: { pending: true } })
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
             expect(() => {
               statusStateEnhancer(() => {})(undefined, {})
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
           }
         )
 
@@ -583,28 +583,28 @@ describe(
             expect(() => {
               defaultGetActionType()
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               defaultGetActionType(null)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               defaultGetActionType(true)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               defaultGetActionType(1)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               defaultGetActionType({})
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               defaultGetActionType('test')
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
           }
         )
 
@@ -643,27 +643,27 @@ describe(
             expect(() => {
               defaultCreatActionCreator()
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               defaultCreatActionCreator(null)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               defaultCreatActionCreator(true)
             })
             expect(() => {
               defaultCreatActionCreator(1)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               defaultCreatActionCreator({})
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               defaultCreatActionCreator('test')
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
           }
         )
 
@@ -681,7 +681,7 @@ describe(
               'payload',
               { type: 'test2', payload: 'payload 2', meta: { test: true } }
             ))
-            .toEqual({ type: 'test', payload: 'payload', meta: { test: true } })
+              .toEqual({ type: 'test', payload: 'payload', meta: { test: true } })
           }
         )
       }
@@ -719,28 +719,28 @@ describe(
             expect(() => {
               defaultActionHandle(undefined, normalAction)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               defaultActionHandle(null, normalAction)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               defaultActionHandle(true, normalAction)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               defaultActionHandle(1, normalAction)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               defaultActionHandle('test', normalAction)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               defaultActionHandle({}, normalAction)
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
           }
         )
 
@@ -817,45 +817,45 @@ describe(
                 getActionType: null
               })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               createReducer({
                 getActionType: true
               })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               createReducer({
                 getActionType: 1
               })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               createReducer({
                 getActionType: 'test'
               })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               createReducer({
                 getActionType: {}
               })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               createReducer({
                 getActionType: () => {}
               })
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
             expect(() => {
               createReducer({
                 getActionType: undefined
               })
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
           }
         )
 
@@ -868,45 +868,45 @@ describe(
                 createActionCreator: null
               })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               createReducer({
                 createActionCreator: true
               })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               createReducer({
                 createActionCreator: 1
               })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               createReducer({
                 createActionCreator: 'test'
               })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               createReducer({
                 createActionCreator: {}
               })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               createReducer({
                 createActionCreator: () => {}
               })
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
             expect(() => {
               createReducer({
                 createActionCreator: undefined
               })
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
           }
         )
 
@@ -919,45 +919,45 @@ describe(
                 createPendingActionCreator: null
               })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               createReducer({
                 createPendingActionCreator: true
               })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               createReducer({
                 createPendingActionCreator: 1
               })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               createReducer({
                 createPendingActionCreator: 'test'
               })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               createReducer({
                 createPendingActionCreator: {}
               })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               createReducer({
                 createPendingActionCreator: () => {}
               })
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
             expect(() => {
               createReducer({
                 createPendingActionCreator: undefined
               })
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
           }
         )
 
@@ -970,45 +970,45 @@ describe(
                 createErrorActionCreator: null
               })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               createReducer({
                 createErrorActionCreator: true
               })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               createReducer({
                 createErrorActionCreator: 1
               })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               createReducer({
                 createErrorActionCreator: 'test'
               })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               createReducer({
                 createErrorActionCreator: {}
               })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               createReducer({
                 createErrorActionCreator: () => {}
               })
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
             expect(() => {
               createReducer({
                 createErrorActionCreator: undefined
               })
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
           }
         )
 
@@ -1021,45 +1021,45 @@ describe(
                 actionHandle: null
               })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               createReducer({
                 actionHandle: true
               })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               createReducer({
                 actionHandle: 1
               })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               createReducer({
                 actionHandle: 'test'
               })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               createReducer({
                 actionHandle: {}
               })
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               createReducer({
                 actionHandle: () => {}
               })
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
             expect(() => {
               createReducer({
                 actionHandle: undefined
               })
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
           }
         )
 
@@ -1084,28 +1084,28 @@ describe(
             expect(() => {
               register()
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               register(null)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               register(true)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               register(1)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               register({})
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               register('test')
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
           }
         )
 
@@ -1150,33 +1150,33 @@ describe(
             expect(() => {
               register('test', null)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               register('test', true)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               register('test', 1)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               register('test', 'handle')
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               register('test', {})
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               register('test', defaultActionHandle)
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
             expect(() => {
               register('test2')
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
           }
         )
 
@@ -1191,57 +1191,57 @@ describe(
             expect(() => {
               register('test', defaultActionHandle, null)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               register('test', defaultActionHandle, true)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               register('test', defaultActionHandle, 1)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               register('test', defaultActionHandle, 'enhancer')
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               register('test', defaultActionHandle, {})
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               register('test', defaultActionHandle, () => {})
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               register('test', defaultActionHandle, () => null)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               register('test', defaultActionHandle, () => true)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               register('test', defaultActionHandle, () => 1)
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               register('test', defaultActionHandle, () => 'action')
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               register('test', defaultActionHandle, () => ({}))
             })
-            .toThrow()
+              .toThrow()
             expect(() => {
               register('test', defaultActionHandle, pendingActionEnhancer)
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
             expect(() => {
               register('test2', defaultActionHandle)
             })
-            .not
-            .toThrow()
+              .not
+              .toThrow()
           }
         )
 
@@ -1271,11 +1271,11 @@ describe(
               payload: false,
               meta: { test: true }
             }))
-            .toEqual({
-              type: 'test',
-              payload: true,
-              meta: { test: true }
-            })
+              .toEqual({
+                type: 'test',
+                payload: true,
+                meta: { test: true }
+              })
           }
         )
 
@@ -1344,9 +1344,7 @@ describe(
             const actionCreator = createReducer().register('test', defaultActionHandle, enhancer)
 
             expect(actionCreator.pending(true, false))
-              .toEqual(
-                enhancer(pendingActionEnhancer(defaultCreatActionCreator('test')))(true, false)
-              )
+              .toEqual(enhancer(pendingActionEnhancer(defaultCreatActionCreator('test')))(true, false))
           }
         )
 
@@ -1358,9 +1356,7 @@ describe(
             const actionCreator = createReducer().register('test', defaultActionHandle, enhancer)
 
             expect(actionCreator.error(true, false))
-              .toEqual(
-                enhancer(errorActionEnhancer(defaultCreatActionCreator('test')))(true, false)
-              )
+              .toEqual(enhancer(errorActionEnhancer(defaultCreatActionCreator('test')))(true, false))
           }
         )
 

@@ -1,6 +1,8 @@
 /* eslint-disable no-console */
 
-const execSync = require('child_process').execSync
+const {
+  execSync
+} = require('child_process')
 
 function exec (command, env, header, footer) {
   if (header) {
