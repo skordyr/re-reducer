@@ -2,15 +2,34 @@ const {
   hasOwnProperty,
 } = Object
 
+/**
+ * @param  {...function} fns
+ * @returns {function}
+ */
 export function compose(...fns) {
   return fns.reduce((composed, fn) => (...args) => composed(fn(...args)))
 }
 
+/**
+ * @param {string} name
+ * @param {string} namespace
+ * @returns {string}
+ */
 export function simpleActionTypeFactory(name, namespace) {
   return `${namespace !== undefined ? `${namespace}/` : ''}${name}`
 }
 
+/**
+ * @param {string} actionType
+ * @returns {function}
+ */
 export function fluxStandardActionFactory(actionType) {
+  /**
+   * @param {any} payload
+   * @param {boolean} error
+   * @param {any} meta
+   * @returns {object}
+   */
   function action(payload, error, meta) {
     return {
       type: actionType,
@@ -24,6 +43,10 @@ export function fluxStandardActionFactory(actionType) {
     }
   }
 
+  /**
+   * @param {any} meta
+   * @returns {object}
+   */
   function pending(meta) {
     return action(undefined, undefined, {
       ...meta,
@@ -31,6 +54,11 @@ export function fluxStandardActionFactory(actionType) {
     })
   }
 
+  /**
+   * @param {Error} err
+   * @param {any} meta
+   * @returns {object}
+   */
   function error(err, meta) {
     return action(err, true, meta)
   }
@@ -41,6 +69,10 @@ export function fluxStandardActionFactory(actionType) {
   return action
 }
 
+/**
+ * @param {function} next
+ * @returns {function}
+ */
 export function fluxStandardActionHandleEnhancer(next) {
   return (state, action) => {
     const {
@@ -82,6 +114,11 @@ export function fluxStandardActionHandleEnhancer(next) {
   }
 }
 
+/**
+ * @param {function} actionTypeFactory
+ * @param {function} actionFactory
+ * @returns {function}
+ */
 export function createReducerCreator(actionTypeFactory, actionFactory) {
   return (options = {}) => {
     const {
@@ -95,6 +132,11 @@ export function createReducerCreator(actionTypeFactory, actionFactory) {
     const _handles = {}
     const _actions = {}
 
+    /**
+     * @param {any} state
+     * @param {object} action
+     * @returns {any}
+     */
     function reducer(state = initialState, action) {
       const handle = _handles[action.type]
 
@@ -171,6 +213,12 @@ export function createReducerCreator(actionTypeFactory, actionFactory) {
   }
 }
 
+/**
+ * @function
+ * @param {any} state
+ * @param {object} action
+ * @returns {any}
+ */
 export const createReducer = createReducerCreator(
   simpleActionTypeFactory,
   fluxStandardActionFactory,
