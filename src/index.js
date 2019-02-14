@@ -3,7 +3,7 @@ const {
 } = Object
 
 /**
- * @param  {...function} fns
+ * @param {...function} fns
  * @returns {function}
  */
 export function compose(...fns) {
