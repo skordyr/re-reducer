@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - 7
+  - 10
 cache:
   yarn: true
   directories:
@@ -13,10 +13,6 @@ jobs:
     - stage: lint
       script:
         - yarn run lint
-    - stage: test
-      script:
-        - yarn run test
-        - cat ./coverage/lcov.info | ./node_modules/.bin/coveralls
     - stage: build
       script:
         - yarn run build
