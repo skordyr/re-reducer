@@ -1,3 +1,9 @@
+# v0.2.0
+2019-02-14
+
+* [CHANGE] refactoring core
+* [UPDATE] update dependencies
+
 # v0.1.4
 2017-10-20
 

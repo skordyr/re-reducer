@@ -1,6 +1,6 @@
 # re-reducer
+
 [![badge:travis]][build-status]
-[![badge:coveralls]][coverage-status]
 [![badge:npm-version]][npm-re-reducer]
 [![badge:npm-downloads]][npm-re-reducer]
 [![badge:issues]][issues]
@@ -9,96 +9,103 @@
 a helper for create Flux Standard Action reducer
 
 ## Installation
+
 To install the stable version:
+
 ```bash
 npm install re-reducer --save
 ```
+
 or
-```
+
+``` bash
 yarn add re-reducer
 ```
 
 ## Usage
+
 ```js
+import { createReducer, compose } from 're-reducer'
 
-import { createReducer } from 're-reducer'
+function change(state, action) {
+  return action.payload
+}
 
-function handleIncrement (next) {
+function increment(state, action) {
+  return state + action.payload
+}
+
+function decrement(state, action) {
+  return state - action.payload
+}
+
+function incrementEnhancer(next) {
   return (state, action) => {
     const {
-      payload,
       meta: {
         type
       } = {}
     } = action
-    return type === 'increment' ? state + payload : next(state, action)
+
+    return type === 'increment' ? increment(state, action) : next(state, action)
   }
 }
 
-function handleDecrement (next) {
+function decrementEnhancer(next) {
   return (state, action) => {
     const {
-      payload,
       meta: {
         type
       } = {}
     } = action
-    return type === 'decrement' ? state - payload : next(state, action)
+
+    return type === 'decrement' ? decrement(state, action) : next(state, action)
   }
 }
-
-const initialState = 1
 
 const counterReducer = createReducer({
-  prefix: 'counter',
-  initialState
+  namespace: 'counter',
+  initialState: 0,
+  handles: {
+    change,
+    increment,
+    decrement
+  },
+  actionEnhancer(next) {
+    return (payload, type) => {
+      return next(payload, undefined, type && {type})
+    }
+  },
+  handleEnhancer: compose(incrementEnhancer, decrementEnhancer)
 })
 
-const {
-  register
-} = counterReducer
-
-const change = register(
-  'change',
-  handleIncrement(handleDecrement((state, action) => {
-    const {
-      payload
-    } = action
-    return payload
-  })),
-  next => (payload, type) => next(
-    payload,
-    {
-      meta: {
-        type
-      }
-    }
-  )
-)
-
+const initialState = 1
 let nextState
 
-nextState = counterReducer(initialState, change(10))
+nextState = counterReducer(initialState, counterReducer.actions.change(10))
 console.log('state change from %s to %s.', initialState, nextState)
 // state change from 1 to 10.
 
-nextState = counterReducer(initialState, change(10, 'increment'))
+nextState = counterReducer(initialState, counterReducer.actions.increment(10))
 console.log('state increment from %s to %s.', initialState, nextState)
 // state increment from 1 to 11.
 
-nextState = counterReducer(initialState, change(10, 'decrement'))
+nextState = counterReducer(initialState, counterReducer.actions.change(10, 'increment'))
+console.log('state increment from %s to %s.', initialState, nextState)
+// state increment from 1 to 11.
+
+nextState = counterReducer(initialState, counterReducer.actions.decrement(10))
 console.log('state decrement from %s to %s.', initialState, nextState)
 // state decrement from 1 to -9.
 
+nextState = counterReducer(initialState, counterReducer.actions.change(10, 'decrement'))
+console.log('state decrement from %s to %s.', initialState, nextState)
+// state decrement from 1 to -9.
 ```
-
-## Examples
-+ [counter][example:counter]
 
 [badge:issues]: https://img.shields.io/github/issues/skordyr/re-reducer.svg "Issues"
 [badge:license]: https://img.shields.io/badge/license-MIT-blue.svg "License"
 [badge:travis]: https://img.shields.io/travis/skordyr/re-reducer.svg "Build Status"
-[badge:coveralls]: https://img.shields.io/coveralls/skordyr/re-reducer.svg "Coverage Status"
 [badge:npm-version]: https://img.shields.io/npm/v/re-reducer.svg "NPM Version"
 [badge:npm-downloads]: https://img.shields.io/npm/dm/re-reducer.svg "NPM Downloads"
 

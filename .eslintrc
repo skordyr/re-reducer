@@ -7,9 +7,12 @@
   "rules": {
     "no-underscore-dangle": "off",
     "no-plusplus": "off",
+    "no-shadow": "off",
+    "class-methods-use-this": "off",
     "semi": ["error", "never"],
-    "comma-dangle": ["error", "never"],
-    "space-before-function-paren": ["error", "always"],
-    "react/jsx-filename-extension": "off"
+    "arrow-parens": ["error", "always"],
+    "react/require-default-props": "off",
+    "react/forbid-prop-types": "off",
+    "react/jsx-filename-extension": ["error", {"extensions": [".js", ".jsx"]}]
   }
 }

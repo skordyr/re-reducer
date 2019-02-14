@@ -1,446 +1,177 @@
-/* eslint-disable no-console */
+const {
+  hasOwnProperty,
+} = Object
 
-/**
- * @param {string} format
- * @param {Array<any>} args
- * @returns {string}
- */
-export function formatMessage (format, ...args) {
-  let lastIndex = 0
-  return format.replace(/%s/g, () => String(args[lastIndex++]))
+export function compose(...fns) {
+  return fns.reduce((composed, fn) => (...args) => composed(fn(...args)))
 }
 
-/**
- * Copyright 2013-2015, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- * Use invariant() to assert state which your program assumes to be true.
- *
- * Provide sprintf-style format (only %s is supported) and arguments to provide
- * information about what broke and what you were expecting.
- *
- * The invariant message will be stripped in production, but the invariant will
- * remain to ensure logic does not differ in production.
- *
- * @param {any} condition
- * @param {string} format
- * @param {Array<any>} args
- * @returns {void}
- */
-export function invariant (condition, format, ...args) {
-  if (process.env.NODE_ENV !== 'production') {
-    if (format === undefined) {
-      throw new Error('invariant(...): Second argument must be a string.')
-    }
-  }
-  if (!condition) {
-    let error
-    if (format === undefined) {
-      error = new Error('Minified exception occurred; use the non-minified dev environment ' +
-        'for the full error message and additional helpful warnings.')
-    } else {
-      error = new Error(formatMessage(format, ...args))
-      error.name = 'Invariant Violation'
-    }
-    error.framesToPop = 1
-    throw error
-  }
+export function simpleActionTypeFactory(name, namespace) {
+  return `${namespace !== undefined ? `${namespace}/` : ''}${name}`
 }
 
-/**
- * Copyright 2014-2015, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- * Similar to invariant but only logs a warning if the condition is not met.
- * This can be used to log issues in development environments in critical
- * paths. Removing the logging code for production environments will keep the
- * same logic and follow the same code paths.
- *
- * @param {any} condition
- * @param {string} format
- * @param {Array<any>} args
- * @returns {void}
- */
-export function warning (condition, format, ...args) {
-  if (process.env.NODE_ENV !== 'production') {
-    if (format === undefined) {
-      throw new Error('warning(...): Second argument must be a string.')
-    }
-    if (!condition) {
-      const message = `Warning: ${formatMessage(format, ...args)}`
-      if (typeof console !== 'undefined') {
-        console.error(message)
-      }
-      try {
-        // This error was thrown as a convenience so that you can use this stack
-        // to find the callsite that caused this warning to fire.
-        throw new Error(message)
-      } catch (err) {} // eslint-disable-line no-empty
+export function fluxStandardActionFactory(actionType) {
+  function action(payload, error, meta) {
+    return {
+      type: actionType,
+      payload,
+      ...error ? {
+        error: true,
+      } : {},
+      ...meta !== undefined ? {
+        meta,
+      } : {},
     }
   }
-}
 
-/**
- * @param {function:object} next
- * @returns {function:object}
- */
-export function pendingActionEnhancer (next) {
-  invariant(
-    typeof next === 'function',
-    'next expected a function, instead received %s.',
-    next
-  )
-
-  return (payload, extra = {}) => {
-    invariant(
-      typeof extra === 'object' && extra !== null,
-      'extra expected a object, instead received %s.',
-      extra
-    )
-
-    const {
-      meta
-    } = extra
-
-    return next(payload, {
-      ...extra,
-      meta: {
-        ...meta,
-        pending: true
-      }
+  function pending(meta) {
+    return action(undefined, undefined, {
+      ...meta,
+      pending: true,
     })
   }
-}
 
-/**
- * @param {function:object} next
- * @returns {function:object}
- */
-export function errorActionEnhancer (next) {
-  invariant(
-    typeof next === 'function',
-    'next expected a function, instead received %s.',
-    next
-  )
-
-  return (payload, extra = {}) => {
-    invariant(
-      typeof extra === 'object' && extra !== null,
-      'extra expected a object, instead received %s.',
-      extra
-    )
-
-    return next(payload, {
-      ...extra,
-      error: true
-    })
+  function error(err, meta) {
+    return action(err, true, meta)
   }
+
+  action.pending = pending
+  action.error = error
+
+  return action
 }
 
-/**
- * @param {function} next
- * @returns {function:object}
- */
-export function statusStateEnhancer (next) {
-  invariant(
-    typeof next === 'function',
-    'next expected a function, instead received %s.',
-    next
-  )
-
+export function fluxStandardActionHandleEnhancer(next) {
   return (state, action) => {
     const {
+      payload,
+      error,
       meta: {
-        pending
+        pending,
       } = {},
-      error
     } = action
 
     if (pending || error) {
-      invariant(
-        typeof state === 'object' && state !== null,
-        'state expected a non-null object, instead received %s.',
-        state
-      )
+      const usePending = state.pending !== undefined
+      const useError = state.error !== undefined
 
-      const {
-        pending: pendingState
-      } = state
-
-      if (pendingState === undefined) {
-        return state
+      if (usePending || useError) {
+        return pending ? {
+          ...state,
+          ...usePending ? {
+            pending: true,
+          } : {},
+          ...useError ? {
+            error: null,
+          } : {},
+        } : {
+          ...state,
+          ...usePending ? {
+            pending: false,
+          } : {},
+          ...useError ? {
+            error: payload,
+          } : {},
+        }
       }
 
-      return pending ? {
-        ...state,
-        pending: true
-      } : {
-        ...state,
-        pending: false
-      }
+      return state
     }
 
     return next(state, action)
   }
 }
 
-/**
- * @param {string} type
- * @param {string|void} prefix
- * @returns {string}
- */
-export function defaultGetActionType (type, prefix) {
-  invariant(
-    typeof type === 'string',
-    'type expected a string, instead received %s.',
-    type
-  )
+export function createReducerCreator(actionTypeFactory, actionFactory) {
+  return (options = {}) => {
+    const {
+      namespace,
+      initialState,
+      handles = {},
+      actionEnhancer,
+      handleEnhancer,
+    } = options
 
-  return prefix === undefined ? type : `${prefix}/${type}`
-}
+    const _handles = {}
+    const _actions = {}
 
-/**
- * @param {string} type
- * @returns {function:object}
- */
-export function defaultCreatActionCreator (type) {
-  invariant(
-    typeof type === 'string',
-    'type expected a string, instead received %s.',
-    type
-  )
+    function reducer(state = initialState, action) {
+      const handle = _handles[action.type]
 
-  return (payload, extra) => ({
-    ...extra,
-    type,
-    payload
-  })
-}
-
-/**
- * @function
- * @param {object} state
- * @param {object} action
- * @returns {object}
- */
-export const defaultActionHandle = statusStateEnhancer((state, action) => {
-  invariant(
-    typeof state === 'object' && state !== null,
-    'state expected a non-null object, instead received %s.',
-    state
-  )
-
-  const {
-    payload
-  } = action
-
-  const {
-    pending
-  } = state
-
-  if (pending === undefined) {
-    return {
-      ...state,
-      ...payload
-    }
-  }
-
-  return {
-    ...state,
-    ...payload,
-    pending: false
-  }
-})
-
-/**
- * @param {object} [options={}]
- * @param {string|void} options.prefix
- * @param {any} [options.initialState={}]
- * @param {function:string} [options.getActionType=defaultGetActionType]
- * @param {function:object} [options.actionHandle=defaultActionHandle]
- * @param {function:function} [options.createActionCreator=defaultCreatActionCreator]
- * @param {function:function} [options.createPendingActionCreator=pendingActionEnhancer]
- * @param {function:function} [options.createErrorActionCreator=errorActionEnhancer]
- * @returns {function:any}
- */
-export function createReducer (options = {}) {
-  const {
-    prefix,
-    initialState = {},
-    getActionType = defaultGetActionType,
-    actionHandle = defaultActionHandle,
-    createActionCreator = defaultCreatActionCreator,
-    createPendingActionCreator = pendingActionEnhancer,
-    createErrorActionCreator = errorActionEnhancer
-  } = options
-
-  invariant(
-    typeof getActionType === 'function',
-    'options.getActionType expected a function, instead received %s.',
-    getActionType
-  )
-
-  invariant(
-    typeof createActionCreator === 'function',
-    'options.createActionCreator expected a function, instead received %s.',
-    createActionCreator
-  )
-
-  invariant(
-    typeof createPendingActionCreator === 'function',
-    'options.createPendingActionCreator expected a function, instead received %s.',
-    createPendingActionCreator
-  )
-
-  invariant(
-    typeof createErrorActionCreator === 'function',
-    'options.createErrorActionCreator expected a function, instead received %s.',
-    createErrorActionCreator
-  )
-
-  invariant(
-    typeof actionHandle === 'function',
-    'options.actionHandle expected a function, instead received %s.',
-    actionHandle
-  )
-
-  /**
-   * @inner
-   * @var {Object.<string, function>}
-   */
-  const _handles = {}
-
-  /**
-   * @param {any} state
-   * @param {object} action
-   * @param {string} action.type
-   * @param {any} action.payload
-   * @param {boolean|void} action.error
-   * @param {object|void} action.meta
-   * @returns {object}
-   */
-  function reducer (state = initialState, action) {
-    const handle = _handles[action.type]
-    return handle ? handle(state, action) : state
-  }
-
-  /**
-   * @returns {Object.<string, function>}
-   */
-  function getHandles () {
-    return _handles
-  }
-
-  /**
-   * @param {string} type
-   * @param {function:any} handle
-   * @param {function:function|void} enhancer
-   * @returns {function:object}
-   */
-  function register (type, handle = actionHandle, enhancer) {
-    invariant(
-      typeof type === 'string',
-      'type expected a string, instead received %s.',
-      type
-    )
-
-    invariant(
-      typeof handle === 'function',
-      'handle expected a function, instead received %s.',
-      handle
-    )
-
-    invariant(
-      !enhancer || typeof enhancer === 'function',
-      'enhancer expected a function, instead received %s.',
-      enhancer
-    )
-
-    const actionType = getActionType(type, prefix)
-
-    invariant(
-      typeof actionType === 'string',
-      'options.getActionType expected a function return a string, instead returned %s.',
-      actionType
-    )
-
-    let _actionCreator = createActionCreator(actionType)
-
-    invariant(
-      typeof _actionCreator === 'function',
-      'options.createActionCreator expected a function return a function, instead returned %s.',
-      _actionCreator
-    )
-
-    let _pendingActionCreator = createPendingActionCreator(_actionCreator)
-
-    invariant(
-      typeof _pendingActionCreator === 'function',
-      'options.createPendingActionCreator expected a function return a function, instead returned %s.',
-      _pendingActionCreator
-    )
-
-    let _errorActionCreator = createErrorActionCreator(_actionCreator)
-
-    invariant(
-      typeof _errorActionCreator === 'function',
-      'options.createErrorActionCreator expected a function return a function, instead returned %s.',
-      _errorActionCreator
-    )
-
-    if (enhancer !== undefined) {
-      _actionCreator = enhancer(_actionCreator)
-
-      invariant(
-        typeof _actionCreator === 'function',
-        'enhancer expected a function return a function, instead returned %s.',
-        _actionCreator
-      )
-
-      _pendingActionCreator = enhancer(_pendingActionCreator)
-
-      invariant(
-        typeof _pendingActionCreator === 'function',
-        'enhancer expected a function return a function, instead returned %s.',
-        _pendingActionCreator
-      )
-
-      _errorActionCreator = enhancer(_errorActionCreator)
-
-      invariant(
-        typeof _errorActionCreator === 'function',
-        'enhancer expected a function return a function, instead returned %s.',
-        _errorActionCreator
-      )
+      return handle ? handle(state, action) : state
     }
 
-    const actionCreator = _actionCreator
-    actionCreator.pending = _pendingActionCreator
-    actionCreator.error = _errorActionCreator
-    actionCreator.type = type
-    actionCreator.actionType = actionType
+    Object.defineProperty(reducer, 'namespace', {
+      configurable: false,
+      enumerable: true,
+      get() {
+        return namespace
+      },
+    })
 
-    warning(
-      _handles[actionType] === undefined || _handles[actionType] === handle,
-      'register overwrite "%s" action handle with a new handle.',
-      actionType
-    )
+    Object.defineProperty(reducer, 'initialState', {
+      configurable: false,
+      enumerable: true,
+      get() {
+        return initialState
+      },
+    })
 
-    _handles[actionType] = handle
+    Object.defineProperty(reducer, 'handles', {
+      configurable: false,
+      enumerable: true,
+      get() {
+        return _handles
+      },
+    })
 
-    return actionCreator
+    Object.defineProperty(reducer, 'actions', {
+      configurable: false,
+      enumerable: true,
+      get() {
+        return _actions
+      },
+    })
+
+    Object.entries(handles).forEach(([name, handle]) => {
+      const actionType = actionTypeFactory(name, namespace)
+      const action = actionFactory(actionType)
+
+      action.actionName = name
+      action.actionType = actionType
+      /* eslint-disable no-param-reassign */
+      handle.actionName = name
+      handle.actionType = actionType
+      /* eslint-enable no-param-reassign */
+
+      const enhancedAction = actionEnhancer ? actionEnhancer(action) : action
+      const enhancedHandle = handleEnhancer ? handleEnhancer(handle) : handle
+
+      if (enhancedAction !== action) {
+        Object.keys(action).forEach((key) => {
+          if (!hasOwnProperty.call(enhancedAction, key)) {
+            enhancedAction[key] = action[key]
+          }
+        })
+      }
+
+      if (enhancedHandle !== handle) {
+        Object.keys(handle).forEach((key) => {
+          if (!hasOwnProperty.call(enhancedHandle, key)) {
+            enhancedHandle[key] = handle[key]
+          }
+        })
+      }
+
+      _actions[name] = enhancedAction
+      _handles[actionType] = enhancedHandle
+    })
+
+    return reducer
   }
-
-  reducer.getHandles = getHandles
-  reducer.register = register
-
-  return reducer
 }
+
+export const createReducer = createReducerCreator(
+  simpleActionTypeFactory,
+  fluxStandardActionFactory,
+)
