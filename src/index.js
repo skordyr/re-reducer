@@ -1,5 +1,7 @@
 const {
-  hasOwnProperty,
+  prototype: {
+    hasOwnProperty,
+  },
 } = Object
 
 /**
