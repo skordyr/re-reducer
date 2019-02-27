@@ -1,6 +1,6 @@
 {
   "name": "re-reducer",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "a helper for create Flux Standard Action reducer",
   "repository": "https://github.com/skordyr/re-reducer.git",
   "author": "skordyr <xyan.sk@gmail.com>",

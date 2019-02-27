@@ -1,3 +1,9 @@
+# v0.2.1
+2019-02-27
+
+* [FIX] Use hasOwnProperty from Object.prototype instead of Object
+* [UPDATE] update dependencies
+
 # v0.2.0
 2019-02-14
 
